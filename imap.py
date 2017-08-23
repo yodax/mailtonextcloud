@@ -53,7 +53,7 @@ class Imap:
                 try:
                     ret, data = self.connection.fetch(message, '(RFC822)')
                 except:
-                    print("No new emails to read.")
+                    # print("No new emails to read.")
                     self.close_connection()
                     exit()
 
