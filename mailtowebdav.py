@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import aaargh
 
@@ -11,17 +12,18 @@ app.arg('--mail_user', help="Mail username")
 app.arg('--mail_password', help="Mail password")
 app.arg('--webdav_user', help="Webdav username")
 app.arg('--webdav_password', help="Webdav password")
-app.arg('--webdavpath', help="This is the location where the webdav server lives", default="/cloud/remote.php/webdav/")
-app.arg('--remotepath', help="This is the location where the files should be uploaded on the server", default="/")
+app.arg('--webdav_path', help="This is the location where the webdav server lives", default="/cloud/remote.php/webdav/")
+app.arg('--remote_path', help="This is the location where the files should be uploaded on the server", default="/")
+app.arg('--delete', help="Delete the email after downloading", type=bool, default=False)
 
 
 @app.cmd
-def upload(server, mail_user, mail_password, webdav_user, webdav_password, webdavpath, remotepath):
+def upload(server, mail_user, mail_password, webdav_user, webdav_password, webdavpath, remotepath, delete):
     imap = Imap(server, mail_user, mail_password)
     webdav = Webdav(server, webdav_user, webdav_password, webdavpath)
     unread_messages = imap.fetch_unread_messages()
     for message in unread_messages:
-        attachment_location = imap.save_attachment(message)
+        attachment_location = imap.save_attachment(message, delete_message=delete)
 
         if not attachment_location == "No attachment found.":
             filename = os.path.basename(attachment_location)

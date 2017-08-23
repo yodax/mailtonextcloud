@@ -19,7 +19,7 @@ class Imap:
         """
         self.connection.close()
 
-    def save_attachment(self, msg, download_folder="/tmp"):
+    def save_attachment(self, message, download_folder="/tmp", delete_message=False):
         """
         Given a message, save its attachments to the specified
         download folder (default is /tmp)
@@ -27,7 +27,7 @@ class Imap:
         return: file path to attachment
         """
         att_path = "No attachment found."
-        for part in msg.walk():
+        for part in message.walk():
             if part.get_content_maintype() == 'multipart':
                 continue
             if part.get('Content-Disposition') is None:
@@ -40,6 +40,11 @@ class Imap:
                 fp = open(att_path, 'wb')
                 fp.write(part.get_payload(decode=True))
                 fp.close()
+
+        if delete_message:
+            self.connection.store(message, '+FLAGS', '\\Deleted')
+            self.connection.expunge()
+
         return att_path
 
     def fetch_unread_messages(self, mark_unread=True):
@@ -53,7 +58,6 @@ class Imap:
                 try:
                     ret, data = self.connection.fetch(message, '(RFC822)')
                 except:
-                    # print("No new emails to read.")
                     self.close_connection()
                     exit()
 
@@ -62,7 +66,7 @@ class Imap:
                     emails.append(msg)
 
                 if mark_unread:
-                    response, data = self.connection.store(message, '+FLAGS', '\\Seen')
+                    self.connection.store(message, '+FLAGS', '\\Seen')
 
             return emails
 
