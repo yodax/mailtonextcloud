@@ -11,7 +11,7 @@ class Imap:
     def __init__(self, mail_server, username, password):
         self.connection = imaplib.IMAP4_SSL(mail_server)
         self.connection.login(username, password)
-        self.connection.select(readonly=False)  # so we can mark mails as read
+        self.connection.select(mailbox="INBOX", readonly=False)
 
     def close_connection(self):
         """
@@ -19,7 +19,7 @@ class Imap:
         """
         self.connection.close()
 
-    def save_attachment(self, message, download_folder="/tmp", delete_message=False):
+    def save_attachment(self, message, download_folder="/tmp"):
         """
         Given a message, save its attachments to the specified
         download folder (default is /tmp)
@@ -40,10 +40,6 @@ class Imap:
                 fp = open(att_path, 'wb')
                 fp.write(part.get_payload(decode=True))
                 fp.close()
-
-        if delete_message:
-            self.connection.store(message, '+FLAGS', '\\Deleted')
-            self.connection.expunge()
 
         return att_path
 

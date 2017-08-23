@@ -14,16 +14,15 @@ app.arg('--webdav_user', help="Webdav username")
 app.arg('--webdav_password', help="Webdav password")
 app.arg('--webdav_path', help="This is the location where the webdav server lives", default="/cloud/remote.php/webdav/")
 app.arg('--remote_path', help="This is the location where the files should be uploaded on the server", default="/")
-app.arg('--delete', help="Delete the email after downloading", type=bool, default=False)
 
 
 @app.cmd
-def upload(server, mail_user, mail_password, webdav_user, webdav_password, webdav_path, remote_path, delete):
+def upload(server, mail_user, mail_password, webdav_user, webdav_password, webdav_path, remote_path):
     imap = Imap(server, mail_user, mail_password)
     webdav = Webdav(server, webdav_user, webdav_password, webdav_path)
     unread_messages = imap.fetch_unread_messages()
     for message in unread_messages:
-        attachment_location = imap.save_attachment(message, delete_message=delete)
+        attachment_location = imap.save_attachment(message)
 
         if not attachment_location == "No attachment found.":
             filename = os.path.basename(attachment_location)
@@ -31,6 +30,7 @@ def upload(server, mail_user, mail_password, webdav_user, webdav_password, webda
             webdav.webdavupload(attachment_location, remote_path, filename)
 
             os.remove(attachment_location)
+
     imap.close_connection()
 
 
