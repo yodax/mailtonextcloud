@@ -23,11 +23,12 @@ def upload(server, mail_user, mail_password, webdav_user, webdav_password, webda
     for message in unread_messages:
         attachment_location = imap.save_attachment(message)
 
-        filename = os.path.basename(attachment_location)
+        if not attachment_location == "No attachment found.":
+            filename = os.path.basename(attachment_location)
 
-        webdav.webdavupload(attachment_location, remotepath, filename)
+            webdav.webdavupload(attachment_location, remotepath, filename)
 
-        os.remove(attachment_location)
+            os.remove(attachment_location)
     imap.close_connection()
 
 
