@@ -18,9 +18,9 @@ app.arg('--delete', help="Delete the email after downloading", type=bool, defaul
 
 
 @app.cmd
-def upload(server, mail_user, mail_password, webdav_user, webdav_password, webdavpath, remotepath, delete):
+def upload(server, mail_user, mail_password, webdav_user, webdav_password, webdav_path, remote_path, delete):
     imap = Imap(server, mail_user, mail_password)
-    webdav = Webdav(server, webdav_user, webdav_password, webdavpath)
+    webdav = Webdav(server, webdav_user, webdav_password, webdav_path)
     unread_messages = imap.fetch_unread_messages()
     for message in unread_messages:
         attachment_location = imap.save_attachment(message, delete_message=delete)
@@ -28,7 +28,7 @@ def upload(server, mail_user, mail_password, webdav_user, webdav_password, webda
         if not attachment_location == "No attachment found.":
             filename = os.path.basename(attachment_location)
 
-            webdav.webdavupload(attachment_location, remotepath, filename)
+            webdav.webdavupload(attachment_location, remote_path, filename)
 
             os.remove(attachment_location)
     imap.close_connection()
