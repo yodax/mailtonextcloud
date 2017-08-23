@@ -4,20 +4,21 @@ import aaargh
 from imap import Imap
 from webdav import Webdav
 
-app = aaargh.App(description="Download attachments from unread emails and uploads them to a webdav share, both the "
-                             "email server and the webdav server should use the same credentials")
+app = aaargh.App(description="Download attachments from unread emails and uploads them to a webdav share")
 
 app.arg('--server', help="This is the hostname of both the email server and the webdav host")
-app.arg('--username', help="Username")
-app.arg('--password', help="Password")
+app.arg('--mail_user', help="Mail username")
+app.arg('--mail_password', help="Mail password")
+app.arg('--webdav_user', help="Webdav username")
+app.arg('--webdav_password', help="Webdav password")
 app.arg('--webdavpath', help="This is the location where the webdav server lives", default="/cloud/remote.php/webdav/")
 app.arg('--remotepath', help="This is the location where the files should be uploaded on the server", default="/")
 
 
 @app.cmd
-def upload(server, username, password, webdavpath, remotepath):
-    imap = Imap(server, username, password)
-    webdav = Webdav(server, username, password, webdavpath)
+def upload(server, mail_user, mail_password, webdav_user, webdav_password, webdavpath, remotepath):
+    imap = Imap(server, mail_user, mail_password)
+    webdav = Webdav(server, webdav_user, webdav_password, webdavpath)
     unread_messages = imap.fetch_unread_messages()
     for message in unread_messages:
         attachment_location = imap.save_attachment(message)
@@ -31,6 +32,5 @@ def upload(server, username, password, webdavpath, remotepath):
 
 
 if __name__ == "__main__":
-
     app.run()
 
