@@ -11,6 +11,5 @@ usage: mailtowebdav.py [-h] [--server SERVER]
                        [--webdav_password WEBDAV_PASSWORD]
                        [--webdav_path WEBDAV_PATH] 
                        [--remote_path REMOTE_PATH]
-                       [--delete DELETE]
                        {upload} 
 ```
