@@ -18,9 +18,13 @@ app.arg('--remote_path', help="This is the location where the files should be up
 
 @app.cmd
 def upload(server, mail_user, mail_password, webdav_user, webdav_password, webdav_path, remote_path):
-    imap = Imap(server, mail_user, mail_password)
-    webdav = Webdav(server, webdav_user, webdav_password, webdav_path)
-    unread_messages = imap.fetch_unread_messages()
+    try:
+        imap = Imap(server, mail_user, mail_password)
+        webdav = Webdav(server, webdav_user, webdav_password, webdav_path)
+        unread_messages = imap.fetch_unread_messages()
+    except:
+        exit(0)
+
     for message in unread_messages:
         attachment_location = imap.save_attachment(message)
 
